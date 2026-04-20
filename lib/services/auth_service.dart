@@ -22,11 +22,12 @@ class AuthService {
   }
 
   static Future<Profile> getCurrentProfile() async {
-    final uid = supabase.auth.currentUser!.id;
+    final user = supabase.auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
     final data = await supabase
         .from(kTableProfiles)
         .select()
-        .eq('id', uid)
+        .eq('id', user.id)
         .single();
     return Profile.fromJson(data);
   }

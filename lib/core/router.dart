@@ -30,6 +30,11 @@ class _RoleRouterState extends State<RoleRouter> {
       };
       Navigator.pushReplacementNamed(context, route);
     } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login error: $e')),
+      );
+      await Future.delayed(const Duration(seconds: 2));
       if (mounted) Navigator.pushReplacementNamed(context, '/login');
     }
   }
