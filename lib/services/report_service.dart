@@ -3,20 +3,21 @@ import '../core/supabase_client.dart';
 import '../models/report.dart';
 
 class ReportService {
-  static Future<void> createReport({
+  static Future<String> createReport({
     required String reporterId,
     required String description,
     required double latitude,
     required double longitude,
     String? photoUrl,
   }) async {
-    await supabase.from(kTableReports).insert({
+    final data = await supabase.from(kTableReports).insert({
       'reporter_id': reporterId,
       'description': description,
       'latitude': latitude,
       'longitude': longitude,
       'photo_url': photoUrl,
-    });
+    }).select('id').single();
+    return data['id'] as String;
   }
 
   static Future<List<Report>> fetchMyReports(String userId) async {
@@ -41,6 +42,14 @@ class ReportService {
     await supabase
         .from(kTableReports)
         .update({'status': status})
+        .eq('id', reportId);
+  }
+
+  static Future<void> updateAiFields(
+      String reportId, String category, String priority) async {
+    await supabase
+        .from(kTableReports)
+        .update({'category': category, 'priority': priority})
         .eq('id', reportId);
   }
 

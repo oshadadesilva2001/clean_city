@@ -6,3 +6,8 @@ const String kTableProfiles = 'profiles';
 const String kTableReports = 'reports';
 const String kTableAssignments = 'assignments';
 const String kBucketReportPhotos = 'report-photos';
+
+const String kGroqApiKey = 'YOUR_GROQ_API_KEY_HERE';
+const String kGroqModel = 'llama-3.3-70b-versatile';
+const String kGroqBaseUrl =
+    'https://api.groq.com/openai/v1/chat/completions';

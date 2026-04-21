@@ -11,6 +11,7 @@ class ReportCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasAiTags = report.category != null || report.priority != null;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: InkWell(
@@ -37,6 +38,24 @@ class ReportCard extends StatelessWidget {
                           .format(report.createdAt.toLocal()),
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
+                    if (hasAiTags) ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 4,
+                        children: [
+                          if (report.category != null)
+                            _AiChip(
+                              label: report.category!,
+                              color: _categoryColor(report.category!),
+                            ),
+                          if (report.priority != null)
+                            _AiChip(
+                              label: report.priority!,
+                              color: _priorityColor(report.priority!),
+                            ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -44,6 +63,50 @@ class ReportCard extends StatelessWidget {
               StatusBadge(status: report.status),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+Color _categoryColor(String category) => switch (category) {
+      'Plastic' => Colors.blue,
+      'Hazardous' => Colors.red,
+      'Construction' => Colors.orange,
+      'Organic' => Colors.green,
+      'Electronic' => Colors.purple,
+      _ => Colors.grey,
+    };
+
+Color _priorityColor(String priority) => switch (priority) {
+      'Low' => Colors.green,
+      'Medium' => Colors.amber,
+      'High' => Colors.orange,
+      'Urgent' => Colors.red,
+      _ => Colors.grey,
+    };
+
+class _AiChip extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _AiChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withAlpha(30),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withAlpha(100)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          color: color.withAlpha(220),
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

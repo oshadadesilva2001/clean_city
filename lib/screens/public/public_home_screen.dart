@@ -3,6 +3,7 @@ import '../../models/report.dart';
 import '../../services/auth_service.dart';
 import '../../services/report_service.dart';
 import '../../widgets/report_card.dart';
+import 'chatbot_screen.dart';
 import 'submit_report_screen.dart';
 
 class PublicHomeScreen extends StatefulWidget {
@@ -26,6 +27,14 @@ class _PublicHomeScreenState extends State<PublicHomeScreen> {
       appBar: AppBar(
         title: const Text('My Reports'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.chat_outlined),
+            tooltip: 'Waste Assistant',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,

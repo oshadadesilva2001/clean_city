@@ -3,6 +3,7 @@ import '../../models/profile.dart';
 import '../../models/report.dart';
 import '../../services/assignment_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/groq_service.dart';
 import '../../services/report_service.dart';
 import '../../widgets/loading_button.dart';
 
@@ -21,6 +22,7 @@ class _AssignWorkerScreenState extends State<AssignWorkerScreen> {
   String? _selectedWorkerId;
   bool _loadingWorkers = true;
   bool _assigning = false;
+  bool _suggestingNote = false;
 
   @override
   void initState() {
@@ -49,6 +51,25 @@ class _AssignWorkerScreenState extends State<AssignWorkerScreen> {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.toString())));
       }
+    }
+  }
+
+  Future<void> _suggestNote() async {
+    setState(() => _suggestingNote = true);
+    try {
+      final note = await GroqService.suggestAssignmentNote(
+          widget.report.description);
+      if (mounted) {
+        _noteCtrl.text = note;
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not generate note. Try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _suggestingNote = false);
     }
   }
 
@@ -126,6 +147,19 @@ class _AssignWorkerScreenState extends State<AssignWorkerScreen> {
                           alignLabelWithHint: true,
                         ),
                         maxLines: 3,
+                      ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        onPressed: _suggestingNote ? null : _suggestNote,
+                        icon: _suggestingNote
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2),
+                              )
+                            : const Icon(Icons.auto_awesome, size: 18),
+                        label: const Text('Suggest Note with AI'),
                       ),
                       const SizedBox(height: 24),
                       LoadingButton(
