@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../models/assignment.dart';
 import '../../models/report.dart';
@@ -7,6 +8,7 @@ import '../../services/assignment_service.dart';
 import '../../services/report_service.dart';
 import '../../services/storage_service.dart';
 import '../../widgets/loading_button.dart';
+import '../../widgets/photo_picker_widget.dart';
 import '../../widgets/status_badge.dart';
 
 class JobDetailScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   String? _signedUrl;
   bool _loading = true;
   bool _completing = false;
+  XFile? _completionPhoto;
 
   @override
   void initState() {
@@ -61,8 +64,10 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   Future<void> _markComplete() async {
     setState(() => _completing = true);
     try {
+      final photoPath = await StorageService.uploadPhoto(
+          _completionPhoto!, widget.assignment.workerId);
       await ReportService.updateStatus(widget.assignment.reportId, 'completed');
-      await AssignmentService.markComplete(widget.assignment.id);
+      await AssignmentService.markComplete(widget.assignment.id, photoPath);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Job marked as complete!')),
@@ -137,12 +142,25 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                             value: widget.assignment.note!),
                       const SizedBox(height: 24),
                       if (!widget.assignment.isCompleted &&
-                          _report!.status != 'completed')
+                          _report!.status != 'completed') ...[
+                        const Text(
+                          'Upload after-cleaning photo (required)',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        PhotoPickerWidget(
+                          image: _completionPhoto,
+                          onImageSelected: (img) =>
+                              setState(() => _completionPhoto = img),
+                        ),
+                        const SizedBox(height: 16),
                         LoadingButton(
                           label: 'Mark as Complete',
                           isLoading: _completing,
-                          onPressed: _markComplete,
+                          onPressed:
+                              _completionPhoto != null ? _markComplete : null,
                         ),
+                      ],
                       if (widget.assignment.isCompleted ||
                           _report!.status == 'completed')
                         const Center(
