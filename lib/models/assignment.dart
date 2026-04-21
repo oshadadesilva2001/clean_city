@@ -6,6 +6,7 @@ class Assignment {
   final String? note;
   final DateTime assignedAt;
   final DateTime? completedAt;
+  final String? completionPhotoUrl;
 
   const Assignment({
     required this.id,
@@ -15,6 +16,7 @@ class Assignment {
     this.note,
     required this.assignedAt,
     this.completedAt,
+    this.completionPhotoUrl,
   });
 
   factory Assignment.fromJson(Map<String, dynamic> json) => Assignment(
@@ -27,6 +29,7 @@ class Assignment {
         completedAt: json['completed_at'] != null
             ? DateTime.parse(json['completed_at'] as String)
             : null,
+        completionPhotoUrl: json['completion_photo_url'] as String?,
       );
 
   bool get isCompleted => completedAt != null;

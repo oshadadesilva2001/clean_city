@@ -37,9 +37,11 @@ class AssignmentService {
     return Assignment.fromJson(data);
   }
 
-  static Future<void> markComplete(String assignmentId) async {
+  static Future<void> markComplete(
+      String assignmentId, String completionPhotoPath) async {
     await supabase.from(kTableAssignments).update({
       'completed_at': DateTime.now().toIso8601String(),
+      'completion_photo_url': completionPhotoPath,
     }).eq('id', assignmentId);
   }
 
