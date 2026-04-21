@@ -3,6 +3,7 @@ import '../../models/report.dart';
 import '../../services/auth_service.dart';
 import '../../services/report_service.dart';
 import '../../widgets/report_card.dart';
+import 'map_screen.dart';
 import 'report_detail_screen.dart';
 
 class AuthorityHomeScreen extends StatefulWidget {
@@ -33,6 +34,13 @@ class _AuthorityHomeScreenState extends State<AuthorityHomeScreen> {
       appBar: AppBar(
         title: const Text('All Reports'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MapScreen()),
+            ),
+          ),
           IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
         ],
       ),
