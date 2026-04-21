@@ -6,6 +6,8 @@ class Report {
   final double longitude;
   final String? photoUrl;
   final String status;
+  final String? category;
+  final String? priority;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -17,6 +19,8 @@ class Report {
     required this.longitude,
     this.photoUrl,
     required this.status,
+    this.category,
+    this.priority,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -29,6 +33,8 @@ class Report {
         longitude: (json['longitude'] as num).toDouble(),
         photoUrl: json['photo_url'] as String?,
         status: json['status'] as String,
+        category: json['category'] as String?,
+        priority: json['priority'] as String?,
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
       );

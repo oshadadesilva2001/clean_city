@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../services/auth_service.dart';
+import '../../services/groq_service.dart';
 import '../../services/report_service.dart';
 import '../../services/storage_service.dart';
 import '../../widgets/loading_button.dart';
@@ -70,13 +71,21 @@ class _SubmitReportScreenState extends State<SubmitReportScreen> {
       if (_image != null) {
         photoPath = await StorageService.uploadPhoto(_image!, userId);
       }
-      await ReportService.createReport(
+      final description = _descCtrl.text.trim();
+      final reportId = await ReportService.createReport(
         reporterId: userId,
-        description: _descCtrl.text.trim(),
+        description: description,
         latitude: _position!.latitude,
         longitude: _position!.longitude,
         photoUrl: photoPath,
       );
+
+      // Fire AI classification in background — does not block the submit flow
+      GroqService.classifyReport(description).then((fields) {
+        ReportService.updateAiFields(
+            reportId, fields['category']!, fields['priority']!);
+      }).catchError((_) {});
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Report submitted!')),
