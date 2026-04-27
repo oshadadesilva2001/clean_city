@@ -11,11 +11,11 @@ class MapScreen extends StatelessWidget {
   Color _markerColor(String status) {
     switch (status) {
       case 'assigned':
-        return Colors.orange;
+        return Colors.blue;
       case 'completed':
         return Colors.green;
       default:
-        return Colors.red;
+        return Colors.orange;
     }
   }
 
@@ -35,17 +35,25 @@ class MapScreen extends StatelessWidget {
               .toList();
 
           if (reports.isEmpty) {
-            return const Center(child: Text('No incidents reported yet.'));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.map_outlined, size: 64, color: Colors.grey.withOpacity(0.5)),
+                  const SizedBox(height: 16),
+                  const Text('No incidents reported yet.', style: TextStyle(color: Colors.grey)),
+                ],
+              ),
+            );
           }
 
-          final center =
-              LatLng(reports.first.latitude, reports.first.longitude);
+          final center = LatLng(reports.first.latitude, reports.first.longitude);
 
           final markers = reports.map((r) {
             return Marker(
               point: LatLng(r.latitude, r.longitude),
-              width: 36,
-              height: 36,
+              width: 40,
+              height: 40,
               child: GestureDetector(
                 onTap: () => Navigator.push(
                   context,
@@ -53,10 +61,26 @@ class MapScreen extends StatelessWidget {
                     builder: (_) => ReportDetailScreen(report: r),
                   ),
                 ),
-                child: Icon(
-                  Icons.location_pin,
-                  size: 36,
-                  color: _markerColor(r.status),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 40,
+                      color: _markerColor(r.status),
+                    ),
+                    Positioned(
+                      top: 6,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -71,28 +95,34 @@ class MapScreen extends StatelessWidget {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.example.clean_city',
                   ),
                   MarkerLayer(markers: markers),
                 ],
               ),
               Positioned(
-                bottom: 16,
-                left: 16,
+                top: 16,
+                right: 16,
                 child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        _LegendItem(color: Colors.red, label: 'Pending'),
-                        SizedBox(height: 4),
-                        _LegendItem(color: Colors.orange, label: 'Assigned'),
-                        SizedBox(height: 4),
-                        _LegendItem(color: Colors.green, label: 'Completed'),
+                      children: [
+                        Text(
+                          'Status Legend',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        const _LegendItem(color: Colors.orange, label: 'Pending'),
+                        const SizedBox(height: 4),
+                        const _LegendItem(color: Colors.blue, label: 'Assigned'),
+                        const SizedBox(height: 4),
+                        const _LegendItem(color: Colors.green, label: 'Completed'),
                       ],
                     ),
                   ),
@@ -117,9 +147,20 @@ class _LegendItem extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.location_pin, size: 16, color: color),
-        const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: [
+              BoxShadow(color: color.withOpacity(0.3), blurRadius: 4),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
       ],
     );
   }
