@@ -74,11 +74,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.auto_awesome, size: 20),
-            SizedBox(width: 8),
-            Text('Waste Assistant'),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.auto_awesome_rounded, size: 18, color: Theme.of(context).colorScheme.primary),
+            ),
+            const SizedBox(width: 12),
+            const Text('Waste Assistant'),
           ],
         ),
       ),
@@ -86,11 +93,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         children: [
           Expanded(
             child: _messages.isEmpty
-                ? _EmptyState()
+                ? const _EmptyState()
                 : ListView.builder(
                     controller: _scrollCtrl,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                     itemCount: _messages.length + (_loading ? 1 : 0),
                     itemBuilder: (_, i) {
                       if (_loading && i == _messages.length) {
@@ -116,30 +122,67 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 }
 
 class _EmptyState extends StatelessWidget {
+  const _EmptyState();
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.recycling, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'Ask me anything about waste disposal',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: Colors.grey),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'e.g. "Where do I recycle old batteries?"',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: Colors.grey[400]),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.recycling_rounded, size: 64, color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'How can I help you today?',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Ask me anything about waste disposal, recycling, or local cleaning regulations.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+            ),
+            const SizedBox(height: 32),
+            _SuggestionChip(
+              label: 'Where to recycle batteries?',
+              onTap: () {}, // Handled by parent if needed
+            ),
+            _SuggestionChip(
+              label: 'Plastic disposal rules',
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SuggestionChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _SuggestionChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
+        ),
+        child: Text(label),
       ),
     );
   }
@@ -158,24 +201,32 @@ class _ChatBubble extends StatelessWidget {
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.78,
+          maxWidth: MediaQuery.of(context).size.width * 0.8,
         ),
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isUser ? cs.primary : cs.surfaceContainerHighest,
+          color: isUser ? cs.primary : Colors.white,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isUser ? 16 : 4),
-            bottomRight: Radius.circular(isUser ? 4 : 16),
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(isUser ? 20 : 4),
+            bottomRight: Radius.circular(isUser ? 4 : 20),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Text(
           content,
           style: TextStyle(
-            color: isUser ? cs.onPrimary : cs.onSurface,
-            fontSize: 14,
+            color: isUser ? cs.onPrimary : Colors.black87,
+            fontSize: 15,
+            height: 1.4,
           ),
         ),
       ),
@@ -191,20 +242,27 @@ class _TypingIndicator extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: Colors.white,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomRight: Radius.circular(16),
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
             bottomLeft: Radius.circular(4),
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: const SizedBox(
-          width: 36,
-          height: 16,
+          width: 40,
+          height: 20,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -256,10 +314,10 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
     return FadeTransition(
       opacity: _anim,
       child: Container(
-        width: 7,
-        height: 7,
+        width: 8,
+        height: 8,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onSurface.withAlpha(180),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
           shape: BoxShape.circle,
         ),
       ),
@@ -280,52 +338,51 @@ class _InputBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          border: Border(
-            top: BorderSide(
-              color: Theme.of(context).dividerColor,
-              width: 0.5,
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              minLines: 1,
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: 'Type a message...',
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              onSubmitted: (_) => onSend(),
             ),
           ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                minLines: 1,
-                maxLines: 4,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  hintText: 'Ask about waste disposal…',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(24)),
-                  ),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  isDense: true,
-                ),
-                onSubmitted: (_) => onSend(),
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton.filled(
-              onPressed: loading ? null : onSend,
-              icon: loading
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.send),
-            ),
-          ],
-        ),
+          const SizedBox(width: 12),
+          IconButton.filled(
+            onPressed: loading ? null : onSend,
+            icon: loading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(Icons.send_rounded),
+          ),
+        ],
       ),
     );
   }

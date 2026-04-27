@@ -14,14 +14,21 @@ class StatusBadge extends StatelessWidget {
       _ => (status, Colors.grey),
     };
 
-    return Chip(
-      label: Text(
-        label,
-        style: const TextStyle(color: Colors.white, fontSize: 12),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.5)),
       ),
-      backgroundColor: color,
-      padding: EdgeInsets.zero,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/constants.dart';
 import 'core/router.dart';
+import 'core/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,10 +24,7 @@ class CleanCityApp extends StatelessWidget {
     return MaterialApp(
       title: 'Clean City',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: Colors.green,
-      ),
+      theme: AppTheme.lightTheme,
       initialRoute: hasSession ? '/router' : '/login',
       routes: appRoutes,
     );

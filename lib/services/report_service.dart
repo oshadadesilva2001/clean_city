@@ -5,17 +5,25 @@ import '../models/report.dart';
 class ReportService {
   static Future<String> createReport({
     required String reporterId,
+    required String reportType,
     required String description,
     required double latitude,
     required double longitude,
     String? photoUrl,
+    String? wasteType,
+    String? scale,
+    String? proximityHazard,
   }) async {
     final data = await supabase.from(kTableReports).insert({
       'reporter_id': reporterId,
+      'report_type': reportType,
       'description': description,
       'latitude': latitude,
       'longitude': longitude,
       'photo_url': photoUrl,
+      'waste_type': wasteType,
+      'scale': scale,
+      'proximity_hazard': proximityHazard,
     }).select('id').single();
     return data['id'] as String;
   }
