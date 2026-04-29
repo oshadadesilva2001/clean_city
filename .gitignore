@@ -45,3 +45,6 @@ app.*.map.json
 /android/app/release
 
 .claude/
+
+# Local secrets — copy secrets.example.dart → secrets.dart and fill in your keys
+lib/core/secrets.dart
